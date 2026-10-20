@@ -1,0 +1,19 @@
+# In project root:
+# python3 -m pip install --force-reinstall .
+# start_server
+
+# PYTHONPATH=/workspace/gr3_compute_side/src python3 -m gr3_compute_side.main
+# python -m gr3_compute_side.vision.main
+[build-system]
+requires = ["setuptools==59.6.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gr3_compute_side"
+version = "0.1.0"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+start_server = "gr3_compute_side.main:main"

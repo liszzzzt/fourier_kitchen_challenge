@@ -1,0 +1,18 @@
+# In project root:
+# python3 -m pip install --force-reinstall .
+# start_gr3
+
+# PYTHONPATH=/workspace/gr3_robot_side/src python3 -m gr3_robot_side.main
+[build-system]
+requires = ["setuptools==59.6.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gr3_robot_side"
+version = "0.1.0"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+start_gr3 = "gr3_robot_side.main:main"
