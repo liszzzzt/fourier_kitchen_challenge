@@ -42,9 +42,9 @@ class ManipulationRemoteControl():
             if key == "8":
                 pose[0] = pose[0] - 0.04
             if key == "9":
-                pose[1] = pose[1] + 0.04
-            if key == "0":
                 pose[1] = pose[1] - 0.04
+            if key == "0":
+                pose[1] = pose[1] + 0.04
             if key == "-":
                 pose[2] = pose[2] + 0.03
             if key == "=":
