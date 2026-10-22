@@ -32,6 +32,8 @@ from mujoco import _simulate
 import numpy as np
 import xml.etree.ElementTree as ET
 
+from rgbd_camera import RGBDCamera
+
 if not glfw._glfw:  # pylint: disable=protected-access
   raise RuntimeError('GLFW dynamic library handle is not available')
 else:
@@ -204,6 +206,7 @@ def _physics_loop(simulate: _Simulate, loader: Optional[_InternalLoaderType]):
   m: mujoco.MjModel = None
   d: mujoco.MjData = None
   ctrl_noise = np.array([])
+  rgbd_camera = None
   reload = True
 
   # CPU-sim synchronization point.
@@ -226,6 +229,18 @@ def _physics_loop(simulate: _Simulate, loader: Optional[_InternalLoaderType]):
       if result is not None:
         m, d = result
         ctrl_noise = np.zeros((m.nu,))
+
+        if rgbd_camera is not None:
+          rgbd_camera.close()
+
+        rgbd_camera = RGBDCamera(
+            model=m,
+            camera_name="gr3_head_rgbd",
+            width=320,
+            height=240,
+            frequency_hz=5.0,
+        )
+        rgbd_camera.start()
 
     reload = False
 
@@ -312,6 +327,12 @@ def _physics_loop(simulate: _Simulate, loader: Optional[_InternalLoaderType]):
 
           # Run mj_forward, to update rendering and joint sliders.
           mujoco.mj_forward(m, d)
+
+        if rgbd_camera is not None:
+          rgbd_camera.submit_state_if_due(d)
+
+  if rgbd_camera is not None:
+    rgbd_camera.close()
 
 
 def _launch_internal(
