@@ -66,7 +66,7 @@ class CenterControl():
 
         return False
 
-    def launch(self):
+    def execute_schedule(self):
         for command_id, command in schedule.items():
             print(command_id, command)
             if 'walk' in command:

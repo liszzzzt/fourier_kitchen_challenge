@@ -76,7 +76,6 @@ def main():
 
     # gr3
     gr3 = FourierGR3()
-    gr3.stand()
     gr3.launch()
 
     # ros2

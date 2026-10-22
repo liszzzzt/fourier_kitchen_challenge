@@ -3,8 +3,8 @@ import json
 from fourier_aurora_client import AuroraClient
 from fourier_aurora_client import MoveCommandManager
 
-from gr3_robot_side.locomotion.controller import LocomotionController
-from gr3_robot_side.manipulation.controller import ManipulationController
+from gr3_robot_side.locomotion.control import LocomotionController
+from gr3_robot_side.manipulation.control import ManipulationController
 
 
 class FourierGR3:
@@ -14,16 +14,14 @@ class FourierGR3:
         self.client = AuroraClient.get_instance(domain_id=123, robot_name="gr3")
         self.move_command_manager = MoveCommandManager(robot_name='gr3')
         time.sleep(1)
-        self.x = 0
-        self.y = 0
         self.locomotion_c = LocomotionController(self.client, self.move_command_manager, 1)
         self.manipulation_c = ManipulationController(self.client, self.move_command_manager, 0.5)
 
     def launch(self):
         if self.fsm_state == 0:
             self.stand()
-        # while self.fsm_state != 0:
-        #     pass
+        self.start_position = self.client.get_base_data("pos_W")
+        print(18, "start_position", self.start_position)
 
     def stand(self):
         self.fsm_state = 2
@@ -31,29 +29,11 @@ class FourierGR3:
         time.sleep(1)
 
     def locomotion(self, msg):
-        # {"id": 1, "target": "simpleTable", "frame_id": "map", "coordinate": [2, 1, 0, 0, 0, 1.57]}
-        command = json.loads(msg.data)
-        target = command["target"]
-        coordinate = command["coordinate"]
-        x, y, z, roll, pitch, yaw = map(float, coordinate)
-        frame_id = command["frame_id"]
-
-        coordinate = (x, y, z, roll, pitch, yaw)
-        result = self.locomotion_c.move_to(coordinate)
-
+        result = self.locomotion_c.execute(msg)
         return result
 
     def manipulation(self, msg):
-        # {"id": 2, "target": "cup", "frame_id": "camera", "coordinate": [0.3, -0.02, 0.1, 0.8, 1, 1.57]}
-        command = json.loads(msg.data)
-        target = command["target"]
-        coordinate = command["coordinate"]
-        x, y, z, roll, pitch, yaw = map(float, coordinate)
-        frame_id = command["frame_id"]
-
-        coordinate = (x, y, z, roll, pitch, yaw)
-        result = self.manipulation_c.touch(coordinate)
-
+        result = self.manipulation_c.execute(msg)
         return result
 
     def shutdown(self):
