@@ -70,9 +70,9 @@ class LocomotionRemoteControl():
             elif key == "t":
                 yaw = yaw - 0.2
             elif key == "y":
-                pitch = pitch + 0.2
-            elif key == "u":
                 pitch = pitch - 0.2
+            elif key == "u":
+                pitch = pitch + 0.2
             yaw = max(-1.3963, min(1.3963, yaw))
             pitch = max(-0.5236, min(0.1483, pitch))
             result = self.move_head(yaw, pitch)
