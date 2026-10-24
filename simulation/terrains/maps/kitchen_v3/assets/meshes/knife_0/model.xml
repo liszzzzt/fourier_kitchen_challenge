@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mujoco model="kitchen_knife_6">
+  <asset>
+    <mesh file="visual/model_normalized_0.obj" name="model_normalized_0_vis" scale="0.195 0.195 0.195" refquat="0.49999999999999983 0.5 0.5000000000000001 0.5" />
+    <mesh file="visual/model_normalized_1.obj" name="model_normalized_1_vis" scale="0.195 0.195 0.195" refquat="0.49999999999999983 0.5 0.5000000000000001 0.5" />
+    <texture type="2d" name="image0" file="visual/image0.png" />
+    <texture type="2d" name="image1" file="visual/image1.png" />
+    <material name="Handle.006" texture="image0" specular="0.5" shininess="0.043554024" />
+    <material name="Knife.002" texture="image1" specular="0.5" shininess="0.12607614" />
+    <mesh file="collision/collision_mesh_collision_0.obj" name="knife_collision_mesh_0" scale="0.195 0.195 0.195" refquat="0.49999999999999983 0.5 0.5000000000000001 0.5" />
+    <mesh file="collision/collision_mesh_collision_1.obj" name="knife_collision_mesh_1" scale="0.195 0.195 0.195" refquat="0.49999999999999983 0.5 0.5000000000000001 0.5" />
+    <mesh file="collision/collision_mesh_collision_2.obj" name="knife_collision_mesh_2" scale="0.195 0.195 0.195" refquat="0.49999999999999983 0.5 0.5000000000000001 0.5" />
+    </asset>
+  <default>
+    <default class="region">
+      <geom group="1" conaffinity="0" contype="0" rgba="0 1 0 0" />
+      </default>
+    <default class="collision">
+      <geom group="0" rgba="0.5 0 0 0.5" density="1000.0" />
+      </default>
+    </default>
+  <worldbody>
+    <body>
+      <body name="object">
+        <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="model_normalized_0_vis" conaffinity="0" contype="0" group="1" material="Knife.002" />
+        <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="model_normalized_1_vis" conaffinity="0" contype="0" group="1" material="Handle.006" />
+        <geom class="region" name="reg_bbox" type="box" pos="-0.00012579542507816678 8.201275497548428e-06 2.2717834267213695e-06" size="0.01288465551686232 0.09731689969353843 0.005309905258892356" />
+        <geom mesh="knife_collision_mesh_0" type="mesh" class="collision" />
+        <geom mesh="knife_collision_mesh_1" type="mesh" class="collision" />
+        <geom mesh="knife_collision_mesh_2" type="mesh" class="collision" />
+        </body>
+      </body>
+    </worldbody>
+  </mujoco>
