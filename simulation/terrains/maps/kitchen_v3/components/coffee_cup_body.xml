@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco>
+  <body name="coffee_cup" pos="0 -0.85 0.816">
+    
+
+    <freejoint name="coffee_cup_free"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="cup_model_normalized_0_vis" conaffinity="0" contype="0" group="1" material="cup_initialShadingGroup.004" name="cup_geom_0"/>
+    <geom name="cup_geom_1" type="box" pos="-3.3180000000021535e-07 -1.3439999999920184e-07 6.0745125000005466e-05" size="0.03475835160000001 0.03475688370000001 0.053016756975000016" group="1" conaffinity="0" contype="0" rgba="0 1 0 0"/>
+    <geom mesh="cup_coffee_collision_mesh_0" type="mesh" group="0" rgba="0.5 0 0 0" density="1000" name="cup_geom_2"/>
+    <geom mesh="cup_coffee_collision_mesh_1" type="mesh" group="0" rgba="0.5 0 0 0" density="1000" name="cup_geom_3"/>
+    <geom mesh="cup_coffee_collision_mesh_2" type="mesh" group="0" rgba="0.5 0 0 0" density="1000" name="cup_geom_4"/>
+    <geom mesh="cup_coffee_collision_mesh_3" type="mesh" group="0" rgba="0.5 0 0 0" density="1000" name="cup_geom_5"/>
+    <geom mesh="cup_coffee_collision_mesh_4" type="mesh" group="0" rgba="0.5 0 0 0" density="1000" name="cup_geom_6"/>
+    <geom mesh="cup_coffee_collision_mesh_5" type="mesh" group="0" rgba="0.5 0 0 0" density="1000" name="cup_geom_7"/>
+    <geom mesh="cup_coffee_collision_mesh_6" type="mesh" group="0" rgba="0.5 0 0 0" density="1000" name="cup_geom_8"/>
+    <geom mesh="cup_coffee_collision_mesh_7" type="mesh" group="0" rgba="0.5 0 0 0" density="1000" name="cup_geom_9"/>
+    <geom mesh="cup_coffee_collision_mesh_8" type="mesh" group="0" rgba="0.5 0 0 0" density="1000" name="cup_geom_10"/>
+    <geom mesh="cup_coffee_collision_mesh_9" type="mesh" group="0" rgba="0.5 0 0 0" density="1000" name="cup_geom_11"/>
+    <geom mesh="cup_coffee_collision_mesh_10" type="mesh" group="0" rgba="0.5 0 0 0" density="1000" name="cup_geom_12"/>
+    <geom mesh="cup_coffee_collision_mesh_11" type="mesh" group="0" rgba="0.5 0 0 0" density="1000" name="cup_geom_13"/>
+    <geom mesh="cup_coffee_collision_mesh_12" type="mesh" group="0" rgba="0.5 0 0 0" density="1000" name="cup_geom_14"/>
+    <geom mesh="cup_coffee_collision_mesh_13" type="mesh" group="0" rgba="0.5 0 0 0" density="1000" name="cup_geom_15"/>
+    <geom mesh="cup_coffee_collision_mesh_14" type="mesh" group="0" rgba="0.5 0 0 0" density="1000" name="cup_geom_16"/>
+    <geom mesh="cup_coffee_collision_mesh_15" type="mesh" group="0" rgba="0.5 0 0 0" density="1000" name="cup_geom_17"/>
+    
+
+  </body>
+  
+
+</mujoco>

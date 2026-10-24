@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco>
+  <body name="plate" pos="0.2 -1.18 0.775">
+    
+
+    <freejoint name="plate_free"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_0_vis" conaffinity="0" contype="0" group="1" material="dish_plate_top" name="dish_geom_0"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_1_vis" conaffinity="0" contype="0" group="1" material="dish_plate_bottom" name="dish_geom_1"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_22._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_2"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_23._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_3"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_21._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_4"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_20._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_5"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_24._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_6"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_30._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_7"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_18._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_8"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_19._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_9"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_31._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_10"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_25._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_11"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_27._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_12"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_26._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_13"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_9._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_14"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_8._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_15"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_6._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_16"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_7._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_17"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_5._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_18"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_4._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_19"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_0._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_20"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_1._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_21"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_3._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_22"/>
+    
+
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_2._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_23"/>
+    
+
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_17._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_24"/>
+    
+
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_16._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_25"/>
+    
+
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_28._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_26"/>
+    
+
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_14._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_27"/>
+    
+
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_15._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_28"/>
+    
+
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_29._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_29"/>
+    
+
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_11._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_30"/>
+    
+
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_10._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_31"/>
+    
+
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_12._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_32"/>
+    
+
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="dish_model_normalized_collision_13._coll" group="0" rgba="0.8 0.8 0.8 0.0" name="dish_geom_33"/>
+    
+
+    <geom name="dish_geom_34" type="box" pos="-0.00013850024999999808 -1.3412500000128947e-07 -6.983749999999941e-06" size="0.09107944235 0.09107499495 0.01223325265" group="1" conaffinity="0" contype="0" rgba="0 1 0 0"/>
+    
+
+  </body>
+  
+
+</mujoco>

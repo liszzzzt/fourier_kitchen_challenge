@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco>
+  <body name="cereal" pos="0.4 -0.85 0.835">
+    <freejoint name="cereal_free"/>
+    <!--group = 0 显示碰撞模型；group=1显示外观模型-->
+    <!-- Original visual parameters -->
+    <geom name="cereal_visual" solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="cereal_vis" conaffinity="0" contype="0" group="1" material="cereal_mat"/>
+
+    <!-- Original transparent collision box -->
+    <geom name="cereal_collision" solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="box" group="0" rgba="0.8 0.8 0.8 0" size="0.0188321389 0.0595723771 0.07250000145" pos="0 0 0.00000000145"/>
+
+    <!-- Original region marker, defaults expanded -->
+    <geom name="cereal_reg_bbox"
+          type="box"
+          group="1"
+          conaffinity="0"
+          contype="0"
+          rgba="0 1 0 0"
+          pos="0 0 0.00000000145"
+          size="0.0188321389 0.0595723771 0.07250000145"/>
+  </body>
+</mujoco>

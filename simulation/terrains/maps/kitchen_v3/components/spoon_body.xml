@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco>
+  <body name="breakfast_spoon" pos="0.65 -1.15 0.779">
+    <freejoint name="breakfast_spoon_free"/>
+
+    <!-- Original visual parameters -->
+    <geom name="spoon_visual"
+          solimp="0.998 0.998 0.001"
+          solref="0.001 1"
+          density="100"
+          friction="0.95 0.3 0.1"
+          type="mesh"
+          mesh="spoon_vis"
+          conaffinity="0"
+          contype="0"
+          group="1"
+          material="spoon_mat"/>
+
+    <!-- Original region marker, defaults expanded -->
+    <geom name="spoon_reg_bbox"
+          type="box"
+          group="1"
+          conaffinity="0"
+          contype="0"
+          rgba="0 1 0 0"
+          pos="9.965498812172096e-07 1.6381798047132024e-05 -8.224149999999444e-06"
+          size="0.019065609477201966 0.09534952593344939 0.015687643549999998"/>
+
+    <!-- Original collision density; display made transparent -->
+    <geom name="spoon_collision_0"
+          mesh="spoon_col_0" type="mesh"
+          group="0" rgba="0.5 0 0 0" density="1000"/>
+    <geom name="spoon_collision_1"
+          mesh="spoon_col_1" type="mesh"
+          group="0" rgba="0.5 0 0 0" density="1000"/>
+    <geom name="spoon_collision_2"
+          mesh="spoon_col_2" type="mesh"
+          group="0" rgba="0.5 0 0 0" density="1000"/>
+    <geom name="spoon_collision_3"
+          mesh="spoon_col_3" type="mesh"
+          group="0" rgba="0.5 0 0 0" density="1000"/>
+    <geom name="spoon_collision_4"
+          mesh="spoon_col_4" type="mesh"
+          group="0" rgba="0.5 0 0 0" density="1000"/>
+  </body>
+</mujoco>

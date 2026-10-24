@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco>
+  <body name="breakfast_bowl" pos="-0.2 -1.16 0.781">
+    
+
+    <freejoint name="breakfast_bowl_free"/>
+    <geom solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="breakfast_model_normalized_0_vis" conaffinity="0" contype="0" group="1" material="breakfast_StingrayPBS2" name="breakfast_bowl_geom_0"/>
+    
+
+    <geom group="1" conaffinity="0" contype="0" rgba="0 1 0 0" name="breakfast_bowl_geom_1" type="box" pos="0.0 5.369000000024491e-07 0.0" size="0.06499996879999997 0.06499816959999997 0.018404414599999995"/>
+    
+
+    <geom group="0" rgba="0.5 0 0 0" density="1000.0" mesh="breakfast_bowl_collision_mesh_0" type="mesh" name="breakfast_bowl_geom_2"/>
+    
+
+    <geom group="0" rgba="0.5 0 0 0" density="1000.0" mesh="breakfast_bowl_collision_mesh_1" type="mesh" name="breakfast_bowl_geom_3"/>
+    
+
+    <geom group="0" rgba="0.5 0 0 0" density="1000.0" mesh="breakfast_bowl_collision_mesh_2" type="mesh" name="breakfast_bowl_geom_4"/>
+    
+
+    <geom group="0" rgba="0.5 0 0 0" density="1000.0" mesh="breakfast_bowl_collision_mesh_3" type="mesh" name="breakfast_bowl_geom_5"/>
+    
+
+    <geom group="0" rgba="0.5 0 0 0" density="1000.0" mesh="breakfast_bowl_collision_mesh_4" type="mesh" name="breakfast_bowl_geom_6"/>
+    
+
+    <geom group="0" rgba="0.5 0 0 0" density="1000.0" mesh="breakfast_bowl_collision_mesh_5" type="mesh" name="breakfast_bowl_geom_7"/>
+    
+
+    <geom group="0" rgba="0.5 0 0 0" density="1000.0" mesh="breakfast_bowl_collision_mesh_6" type="mesh" name="breakfast_bowl_geom_8"/>
+    
+
+    <geom group="0" rgba="0.5 0 0 0" density="1000.0" mesh="breakfast_bowl_collision_mesh_7" type="mesh" name="breakfast_bowl_geom_9"/>
+    
+
+    <geom group="0" rgba="0.5 0 0 0" density="1000.0" mesh="breakfast_bowl_collision_mesh_8" type="mesh" name="breakfast_bowl_geom_10"/>
+    
+
+    <geom group="0" rgba="0.5 0 0 0" density="1000.0" mesh="breakfast_bowl_collision_mesh_9" type="mesh" name="breakfast_bowl_geom_11"/>
+    
+
+    <geom group="0" rgba="0.5 0 0 0" density="1000.0" mesh="breakfast_bowl_collision_mesh_10" type="mesh" name="breakfast_bowl_geom_12"/>
+    
+
+    <geom group="0" rgba="0.5 0 0 0" density="1000.0" mesh="breakfast_bowl_collision_mesh_11" type="mesh" name="breakfast_bowl_geom_13"/>
+    
+
+    <geom group="0" rgba="0.5 0 0 0" density="1000.0" mesh="breakfast_bowl_collision_mesh_12" type="mesh" name="breakfast_bowl_geom_14"/>
+    
+
+    <geom group="0" rgba="0.5 0 0 0" density="1000.0" mesh="breakfast_bowl_collision_mesh_13" type="mesh" name="breakfast_bowl_geom_15"/>
+    
+
+    <geom group="0" rgba="0.5 0 0 0" density="1000.0" mesh="breakfast_bowl_collision_mesh_14" type="mesh" name="breakfast_bowl_geom_16"/>
+    
+
+    <geom group="0" rgba="0.5 0 0 0" density="1000.0" mesh="breakfast_bowl_collision_mesh_15" type="mesh" name="breakfast_bowl_geom_17"/>
+    
+
+    <geom group="1" conaffinity="0" contype="0" rgba="0 0 0 0 " size="0.058 0.058 0.025" pos="0 0 0.018" type="ellipsoid" name="breakfast_bowl_geom_18"/>
+    
+
+  </body>
+  
+
+</mujoco>

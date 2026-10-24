@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco>
+  <body name="kitchen_knife" pos="0.45 -1.15 0.768">
+    <freejoint name="knife_free"/>
+
+    <!-- Original visual parameters -->
+    <geom name="knife_blade_visual"
+          solimp="0.998 0.998 0.001"
+          solref="0.001 1"
+          density="100"
+          friction="0.95 0.3 0.1"
+          type="mesh"
+          mesh="knife_vis_0"
+          conaffinity="0"
+          contype="0"
+          group="1"
+          material="knife_blade_mat"/>
+
+    <geom name="knife_handle_visual"
+          solimp="0.998 0.998 0.001"
+          solref="0.001 1"
+          density="100"
+          friction="0.95 0.3 0.1"
+          type="mesh"
+          mesh="knife_vis_1"
+          conaffinity="0"
+          contype="0"
+          group="1"
+          material="knife_handle_mat"/>
+
+    <!-- Original region marker, defaults expanded -->
+    <geom name="knife_reg_bbox"
+          type="box"
+          group="1"
+          conaffinity="0"
+          contype="0"
+          rgba="0 1 0 0"
+          pos="-0.000125795425 0.0000082012755 0.0000022717834"
+          size="0.012884655517 0.097316899694 0.005309905259"/>
+
+    <!-- Collision defaults expanded; display made transparent -->
+    <geom name="knife_collision_0"
+          mesh="knife_col_0"
+          type="mesh"
+          group="0"
+          rgba="0.5 0 0 0"
+          density="1000"/>
+
+    <geom name="knife_collision_1"
+          mesh="knife_col_1"
+          type="mesh"
+          group="0"
+          rgba="0.5 0 0 0"
+          density="1000"/>
+
+    <geom name="knife_collision_2"
+          mesh="knife_col_2"
+          type="mesh"
+          group="0"
+          rgba="0.5 0 0 0"
+          density="1000"/>
+  </body>
+</mujoco>

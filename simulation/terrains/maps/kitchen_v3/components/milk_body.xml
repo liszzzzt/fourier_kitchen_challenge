@@ -1,0 +1,23 @@
+<mujoco>
+  <body name="milk" pos="0.2 -0.85 0.855">
+    <freejoint name="milk_free"/>
+
+    <!-- Original visual parameters -->
+    <geom name="milk_visual_0" solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="milk_vis_0" conaffinity="0" contype="0" group="1" material="milk_body_mat"/>
+
+    <geom name="milk_visual_1" solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" type="mesh" mesh="milk_vis_1" conaffinity="0" contype="0" group="1" material="milk_cap_mat"/>
+
+    <!-- Original bounding-region marker -->
+    <geom group="1" conaffinity="0" contype="0" rgba="0 1 0 0" name="milk_reg_bbox" type="box" pos="0 0 -0.0002480562" size="0.028773513 0.028773513 0.0907419474"/>
+
+    <!-- Original collision parameters inherited from default -->
+    <geom name="milk_collision_0" mesh="milk_col_0" type="mesh" group="0" rgba="0.5 0 0 0" density="1000"/>
+    <geom name="milk_collision_1" mesh="milk_col_1" type="mesh" group="0" rgba="0.5 0 0 0" density="1000"/>
+    <geom name="milk_collision_2" mesh="milk_col_2" type="mesh" group="0" rgba="0.5 0 0 0" density="1000"/>
+    <geom name="milk_collision_3" mesh="milk_col_3" type="mesh" group="0" rgba="0.5 0 0 0" density="1000"/>
+    <geom name="milk_collision_4" mesh="milk_col_4" type="mesh" group="0" rgba="0.5 0 0 0" density="1000"/>
+    <geom name="milk_collision_5" mesh="milk_col_5" type="mesh" group="0" rgba="0.5 0 0 0" density="1000"/>
+    <geom name="milk_collision_6" mesh="milk_col_6" type="mesh" group="0" rgba="0.5 0 0 0" density="1000"/>
+    <geom name="milk_collision_7" mesh="milk_col_7" type="mesh" group="0" rgba="0.5 0 0 0" density="1000"/>
+  </body>
+</mujoco>
