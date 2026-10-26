@@ -4,6 +4,11 @@ The physics thread only submits copies of the latest robot state. A dedicated
 worker owns the MuJoCo renderer and renders outside the viewer's simulation
 lock. At most one pending state is retained, so slow rendering drops stale
 frames instead of building an unbounded queue.
+
+viewer.py already creates this camera after every model load and calls
+submit_state_if_due() once per physics-loop iteration, so the right-hand
+gripper (hand_controller.py) is driven from here as well: viewer.py stays the
+project's original.
 """
 
 import threading
@@ -19,6 +24,12 @@ from rclpy.qos import HistoryPolicy
 from rclpy.qos import QoSProfile
 from rclpy.qos import ReliabilityPolicy
 from sensor_msgs.msg import Image
+from sensor_msgs.msg import JointState
+
+from hand_controller import HandController
+
+HEAD_CAMERA_JOINTS = ("waist_yaw_joint", "waist_roll_joint", "waist_pitch_joint",
+                    "head_yaw_joint", "head_pitch_joint")
 
 
 class RGBDCamera:
@@ -49,6 +60,12 @@ class RGBDCamera:
 
         self.model = model
         self.camera_name = camera_name
+        self.joint_qpos_index = []
+        for joint_name in HEAD_CAMERA_JOINTS:
+            joint_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, joint_name)
+            if joint_id < 0:
+                raise ValueError(f"MuJoCo joint {joint_name!r} was not found in the model")
+            self.joint_qpos_index.append(int(model.jnt_qposadr[joint_id]))
         self.camera_id = camera_id
         self.width = width
         self.height = height
@@ -62,8 +79,15 @@ class RGBDCamera:
         self._thread: Optional[threading.Thread] = None
         self._worker_error: Optional[Exception] = None
 
+        # Right-hand gripper: only when the model has it (other robot models keep a camera-only RGBDCamera).
+        self.gripper: Optional[HandController] = None
+        if mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, "right_jaw_a_joint") >= 0:
+            self.gripper = HandController(model)
+
     def start(self) -> None:
-        """Start the rendering worker."""
+        """Start the rendering worker (and the gripper's ROS worker)."""
+        if self.gripper is not None:
+            self.gripper.start()
         if self._thread is not None:
             return
 
@@ -81,6 +105,8 @@ class RGBDCamera:
         lock. It performs no OpenGL operations and never waits for rendering.
         The return value indicates whether a state was submitted.
         """
+        if self.gripper is not None:
+            self.gripper.step(data)        # every iteration, also when the camera itself has failed
         if self._thread is None:
             raise RuntimeError("RGB-D worker has not been started")
         if self._worker_error is not None:
@@ -146,6 +172,11 @@ class RGBDCamera:
                 "/gr3/camera/depth/image_raw",
                 image_qos,
             )
+            joint_publisher = ros_node.create_publisher(
+                JointState, 
+                "/gr3/camera/joint_states", 
+                image_qos
+            )
 
             render_data = mujoco.MjData(self.model)
             renderer = mujoco.Renderer(
@@ -194,6 +225,8 @@ class RGBDCamera:
                     depth_publisher,
                     rgb,
                     depth,
+                    joint_publisher,
+                    qpos
                 )
         except Exception as error:  # Keep the main simulation alive.
             self._worker_error = error
@@ -241,6 +274,8 @@ class RGBDCamera:
         depth_publisher,
         rgb: np.ndarray,
         depth: np.ndarray,
+        joint_publisher=None,
+        qpos: Optional[np.ndarray] = None
     ) -> None:
         """Publish synchronized RGB and depth images with one ROS timestamp."""
         timestamp = ros_node.get_clock().now().to_msg()
@@ -269,6 +304,13 @@ class RGBDCamera:
 
         rgb_publisher.publish(rgb_message)
         depth_publisher.publish(depth_message)
+        if joint_publisher is not None and qpos is not None:
+            joint_message = JointState()
+            joint_message.header.stamp = timestamp
+            joint_message.header.frame_id = "base_link"
+            joint_message.name = list(HEAD_CAMERA_JOINTS)
+            joint_message.position = [float(qpos[i]) for i in self.joint_qpos_index]
+            joint_publisher.publish(joint_message)
 
     @staticmethod
     def _disable_expensive_effects(renderer: mujoco.Renderer) -> None:
@@ -278,6 +320,8 @@ class RGBDCamera:
 
     def close(self) -> None:
         """Stop the worker and release its renderer in the worker thread."""
+        if self.gripper is not None:
+            self.gripper.close()
         thread = self._thread
         if thread is None:
             return

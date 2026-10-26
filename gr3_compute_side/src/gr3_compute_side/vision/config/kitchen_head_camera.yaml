@@ -1,0 +1,277 @@
+_说明: fourier_kitchen_challenge 仿真（Aurora SDK GR3_V233 + kitchen 地形）头部 RGB-D 相机 gr3_head_rgbd 的标定结果（用法见 kitchen_head_calib/README.md）；相机定义或机型变了要重标
+camera_name: gr3_head_rgbd
+created: '2026-10-23T01:04:24'
+kinematics:
+  model: ../robot_model/GR3_V233/gr3v2_3_3.xml
+  model_is_relative_to: 本 yaml 所在目录
+  note: GR3_V233（Aurora SDK 仿真默认机型；与更新前 gr3_kitchen.xml 的机器人运动学一致）。head_chain = base_link → camera_link / torso_link 路径上的 body，运行时只靠它就能算 FK
+  scene_used_for_calibration: 机器人 …/usr/local/resources/GR3_V233（gr3v2_3_3.xml 换成 …/fkc_remote/simulation/sensors/gr3v2_3_3.xml） + 厨房 …/terrains/maps/kitchen_challenge/kitchen.xml
+  head_chain:
+  - name: base_link
+    parent: null
+    pos:
+    - 0.0
+    - 0.0
+    - 0.0
+    quat:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    joints: []
+  - name: waist_yaw_link
+    parent: base_link
+    pos:
+    - 0.0
+    - 0.0
+    - 0.19243
+    quat:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    joints:
+    - name: waist_yaw_joint
+      type: hinge
+      axis:
+      - 0.0
+      - 0.0
+      - 1.0
+      pos:
+      - 0.0
+      - 0.0
+      - 0.0
+      range:
+      - -2.618
+      - 2.618
+  - name: waist_roll_link
+    parent: waist_yaw_link
+    pos:
+    - 0.0
+    - 0.0
+    - 0.0
+    quat:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    joints:
+    - name: waist_roll_joint
+      type: hinge
+      axis:
+      - 1.0
+      - 0.0
+      - 0.0
+      pos:
+      - 0.0
+      - 0.0
+      - 0.0
+      range:
+      - -0.17453
+      - 0.17453
+  - name: waist_pitch_link
+    parent: waist_roll_link
+    pos:
+    - 0.0
+    - 0.0
+    - 0.0
+    quat:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    joints:
+    - name: waist_pitch_joint
+      type: hinge
+      axis:
+      - 0.0
+      - 1.0
+      - 0.0
+      pos:
+      - 0.0
+      - 0.0
+      - 0.0
+      range:
+      - -0.20944
+      - 0.5236
+  - name: torso_link
+    parent: waist_pitch_link
+    pos:
+    - 0.0
+    - 0.0
+    - 0.20098
+    quat:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    joints: []
+  - name: head_yaw_link
+    parent: torso_link
+    pos:
+    - 0.0077592
+    - 0.0
+    - 0.18912
+    quat:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    joints:
+    - name: head_yaw_joint
+      type: hinge
+      axis:
+      - 0.0
+      - 0.0
+      - 1.0
+      pos:
+      - 0.0
+      - 0.0
+      - 0.0
+      range:
+      - -1.3963
+      - 1.3963
+  - name: head_pitch_link
+    parent: head_yaw_link
+    pos:
+    - -0.0028545
+    - 0.0
+    - 0.033315
+    quat:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    joints:
+    - name: head_pitch_joint
+      type: hinge
+      axis:
+      - 0.0
+      - 1.0
+      - 0.0
+      pos:
+      - 0.0
+      - 0.0
+      - 0.0
+      range:
+      - -0.5236
+      - 0.14835
+  - name: camera_link
+    parent: head_pitch_link
+    pos:
+    - 0.095246
+    - 0.0
+    - 0.051074
+    quat:
+    - 0.991444889
+    - 0.0
+    - 0.130525985
+    - 0.0
+    joints: []
+intrinsics:
+  width: 320
+  height: 240
+  camera_matrix:
+  - - 208.091249
+    - 0.0
+    - 159.581767
+  - - 0.0
+    - 208.094279
+    - 120.163821
+  - - 0.0
+    - 0.0
+    - 1.0
+  distortion_coefficients:
+  - 0.00854968
+  - -0.01978136
+  - 0.0
+  - 0.0
+  - 0.0
+  distortion_model: plumb_bob (k1 k2 p1 p2 k3)
+  reprojection_rms_px: 0.2413
+  n_images: 37
+intrinsics_before_calibration:
+  fx: 230.0
+  fy: 230.0
+  cx: 165.0
+  cy: 115.0
+depth:
+  unit: m
+  type: z-depth along optical axis (0 = invalid)
+  aligned_to_color: true
+extrinsic:
+  mount_link: head_pitch_link
+  base_link: base_link
+  T_mount_optical:
+  - - 0.00142043
+    - -0.26066896
+    - 0.9654272
+    - 0.09486701
+  - - -0.99999888
+    - -0.00082699
+    - 0.001248
+    - 0.00084623
+  - - 0.00047309
+    - -0.96542789
+    - -0.26066984
+    - 0.05105271
+  - - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+  T_mount_optical_xyz_rpy:
+    xyz:
+    - 0.094867
+    - 0.000846
+    - 0.051053
+    rpy:
+    - -1.834512
+    - -0.000473
+    - -1.569376
+  T_camera_link_optical:
+  - - 0.00124959
+    - -0.00191617
+    - 0.99999738
+    - -0.00036057
+  - - -0.99999888
+    - -0.00082699
+    - 0.001248
+    - 0.00084623
+  - - 0.0008246
+    - -0.99999782
+    - -0.00191721
+    - -0.00011866
+  - - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+  mjcf_camera_in_camera_link: <camera name="gr3_head_rgbd" pos="-0.000361 0.000846 -0.000119" quat="0.500997 0.499626 -0.499415 -0.499960" fovy="59.9408"/>
+  delta_vs_cad:
+    mm: 0.927
+    deg: 0.1393
+  chain: 'T_base_optical(q) = FK(q: base_link → head_pitch_link) · T_mount_optical  (q = 腰3 + 头2)'
+quality:
+  handeye_samples: 30
+  residual_median_mm: 1.082
+  residual_median_deg: 0.2789
+  rotation_diversity:
+    max_angle_deg: 52.452
+    axis_spread: 0.539
+valid_for_truth:
+  camera: gr3_head_rgbd
+  width: 320
+  height: 240
+  fovy_deg: 60.0
+  note: 项目 simulation/sensors/gr3v2_3_3.xml 里的相机；相机定义变了要重标
+sim_validation:
+  fx_fy_cx_cy_true:
+  - 207.84609690826528
+  - 207.84609690826528
+  - 159.5
+  - 119.5
+  extrinsic_error_cad:
+    mm: 0.0
+    deg: 0.0
+  extrinsic_error_calibrated:
+    mm: 0.927
+    deg: 0.1393
