@@ -1,0 +1,76 @@
+<mujocoinclude>
+  <body name="open_storage_cabinet">
+
+    <!-- Solid raised base: height 0.65 m -->
+    <geom name="open_cabinet_base"
+          type="box"
+          pos="0 0 0.325"
+          size="0.6 0.25 0.325"
+          material="kc_M_hinge_wood"
+          contype="1" conaffinity="1"/>
+
+    <!-- Left and right sides -->
+    <geom name="open_cabinet_left"
+          type="box"
+          pos="-0.59 0 1.05"
+          size="0.01 0.25 0.4"
+          material="kc_M_hinge_wood"
+          contype="1" conaffinity="1"/>
+
+    <geom name="open_cabinet_right"
+          type="box"
+          pos="0.59 0 1.05"
+          size="0.01 0.25 0.4"
+          material="kc_M_hinge_wood"
+          contype="1" conaffinity="1"/>
+
+    <!-- Back panel: cabinet opens toward local -Y -->
+    <geom name="open_cabinet_back"
+          type="box"
+          pos="0 0.24 1.05"
+          size="0.58 0.01 0.38"
+          material="kc_M_hinge_wood"
+          contype="1" conaffinity="1"/>
+
+    <!-- Lower shelf: upper surface at 0.67 m -->
+    <geom name="open_cabinet_lower_shelf"
+          type="box"
+          pos="0 -0.01 0.66"
+          size="0.58 0.24 0.01"
+          material="kc_M_hinge_wood"
+          contype="1" conaffinity="1"/>
+
+    <!-- Upper shelf: upper surface at 1.06 m -->
+    <geom name="open_cabinet_upper_shelf"
+          type="box"
+          pos="0 -0.01 1.05"
+          size="0.58 0.24 0.01"
+          material="kc_M_hinge_wood"
+          contype="1" conaffinity="1"/>
+
+    <!-- Top panel -->
+    <geom name="open_cabinet_top"
+          type="box"
+          pos="0 -0.01 1.44"
+          size="0.58 0.24 0.01"
+          material="kc_M_hinge_wood"
+          contype="1" conaffinity="1"/>
+
+    <!-- Lower central divider -->
+    <geom name="open_cabinet_lower_divider"
+          type="box"
+          pos="0 -0.01 0.855"
+          size="0.01 0.24 0.185"
+          material="kc_M_hinge_wood"
+          contype="1" conaffinity="1"/>
+
+    <!-- Upper central divider -->
+    <geom name="open_cabinet_upper_divider"
+          type="box"
+          pos="0 -0.01 1.245"
+          size="0.01 0.24 0.185"
+          material="kc_M_hinge_wood"
+          contype="1" conaffinity="1"/>
+
+  </body>
+</mujocoinclude>
