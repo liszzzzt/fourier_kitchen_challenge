@@ -5,13 +5,24 @@ worker owns the MuJoCo renderer and renders outside the viewer's simulation
 lock. At most one pending state is retained, so slow rendering drops stale
 frames instead of building an unbounded queue.
 
-viewer.py already creates this camera after every model load and calls
-submit_state_if_due() once per physics-loop iteration, so the right-hand
-gripper (hand_controller.py) is driven from here as well: viewer.py stays the
-project's original.
+Rendering backend (GR3_CAMERA_GL environment variable):
+  "osmesa" (default)  render in a child process that only uses OSMesa (CPU,
+                      llvmpipe). Inside VMware every switch between the viewer's
+                      OpenGL context and a second one stalls the whole virtual
+                      GPU for ~0.4 s, which froze the entire host desktop; OSMesa
+                      never touches the virtual GPU. Needs libosmesa6. If the
+                      child cannot start, falls back to "gpu" with a warning.
+  "gpu"               render in this process on the default MuJoCo backend.
 """
 
+import os
+import pickle
+import struct
+import subprocess
+import sys
+import tempfile
 import threading
+import time
 from typing import Optional, Tuple
 
 import mujoco
@@ -23,13 +34,138 @@ from rclpy.qos import DurabilityPolicy
 from rclpy.qos import HistoryPolicy
 from rclpy.qos import QoSProfile
 from rclpy.qos import ReliabilityPolicy
+from builtin_interfaces.msg import Time
 from sensor_msgs.msg import Image
-from sensor_msgs.msg import JointState
 
-from hand_controller import HandController
+CAMERA_GL = os.environ.get("GR3_CAMERA_GL", "osmesa")
 
-HEAD_CAMERA_JOINTS = ("waist_yaw_joint", "waist_roll_joint", "waist_pitch_joint",
-                    "head_yaw_joint", "head_pitch_joint")
+
+def _send(stream, obj) -> None:
+    payload = pickle.dumps(obj, protocol=pickle.HIGHEST_PROTOCOL)
+    stream.write(struct.pack("<Q", len(payload)))
+    stream.write(payload)
+    stream.flush()
+
+
+def _recv(stream):
+    header = stream.read(8)
+    if len(header) < 8:
+        return None
+    (size,) = struct.unpack("<Q", header)
+    return pickle.loads(stream.read(size))
+
+
+def _apply_state(model: mujoco.MjModel, data: mujoco.MjData, state) -> None:
+    simulation_time, qpos, qvel, act, mocap_pos, mocap_quat, userdata = state
+    data.time = simulation_time
+    data.qpos[:] = qpos
+    data.qvel[:] = qvel
+    data.act[:] = act
+    data.mocap_pos[:] = mocap_pos
+    data.mocap_quat[:] = mocap_quat
+    data.userdata[:] = userdata
+    mujoco.mj_forward(model, data)
+
+
+def _render_rgbd(
+    renderer: mujoco.Renderer,
+    data: mujoco.MjData,
+    camera_name: str,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Render one synchronized RGB/depth pair (shadows / reflections off)."""
+    renderer.disable_depth_rendering()
+    renderer.update_scene(data, camera=camera_name)
+    renderer.scene.flags[mujoco.mjtRndFlag.mjRND_SHADOW] = 0
+    renderer.scene.flags[mujoco.mjtRndFlag.mjRND_REFLECTION] = 0
+    rgb = renderer.render().copy()
+
+    # Reuse the scene so RGB and depth correspond to exactly the same state.
+    renderer.enable_depth_rendering()
+    depth = renderer.render().copy()
+    renderer.disable_depth_rendering()
+    return rgb, depth
+
+
+class _OSMesaRenderer:
+    """Head-camera renderer in a child process that only uses OSMesa.
+
+    One process cannot mix OSMesa with the viewer's GLX context (MuJoCo's GL
+    function pointers are process-wide), hence the child. It receives the
+    model once (as an .mjb file) and then one state per frame over a pipe, and
+    returns the RGB / depth arrays.
+    """
+
+    def __init__(self, model: mujoco.MjModel, camera_name: str, width: int, height: int):
+        fd, self._mjb = tempfile.mkstemp(prefix="gr3_head_camera_", suffix=".mjb")
+        os.close(fd)
+        mujoco.mj_saveModel(model, self._mjb, None)
+        to_child_r, self._to_child = os.pipe()
+        self._from_child, from_child_w = os.pipe()
+        env = dict(os.environ, MUJOCO_GL="osmesa", PYOPENGL_PLATFORM="osmesa")
+        self._proc = subprocess.Popen(
+            [sys.executable, os.path.abspath(__file__), "--osmesa-worker", self._mjb,
+             camera_name, str(width), str(height), str(to_child_r), str(from_child_w)],
+            pass_fds=(to_child_r, from_child_w),
+            env=env,
+        )
+        os.close(to_child_r)
+        os.close(from_child_w)
+        self._out = os.fdopen(self._to_child, "wb")
+        self._in = os.fdopen(self._from_child, "rb")
+        reply = _recv(self._in)
+        if reply is None or reply[0] != "ready":
+            self.close()
+            raise RuntimeError(f"OSMesa camera process did not start: {reply}")
+
+    def render(self, state) -> Tuple[np.ndarray, np.ndarray]:
+        _send(self._out, state)
+        reply = _recv(self._in)
+        if reply is None or reply[0] != "ok":
+            raise RuntimeError(f"OSMesa camera process failed: {reply}")
+        return reply[1], reply[2]
+
+    def close(self) -> None:
+        for stream in (getattr(self, "_out", None), getattr(self, "_in", None)):
+            try:
+                if stream is not None:
+                    stream.close()
+            except OSError:
+                pass
+        if self._proc.poll() is None:
+            self._proc.terminate()
+            try:
+                self._proc.wait(timeout=2.0)
+            except subprocess.TimeoutExpired:
+                self._proc.kill()
+        try:
+            os.remove(self._mjb)
+        except OSError:
+            pass
+
+
+def _osmesa_worker(mjb: str, camera_name: str, width: int, height: int, fd_in: int, fd_out: int) -> None:
+    """Child process: MUJOCO_GL=osmesa was set before mujoco was imported."""
+    inp = os.fdopen(fd_in, "rb")
+    out = os.fdopen(fd_out, "wb")
+    try:
+        model = mujoco.MjModel.from_binary_path(mjb)
+        data = mujoco.MjData(model)
+        renderer = mujoco.Renderer(model, height=height, width=width)
+    except Exception as error:
+        _send(out, ("error", f"{type(error).__name__}: {error}"))
+        return
+    _send(out, ("ready",))
+    while True:
+        state = _recv(inp)
+        if state is None:
+            return
+        try:
+            _apply_state(model, data, state)
+            rgb, depth = _render_rgbd(renderer, data, camera_name)
+            _send(out, ("ok", rgb, depth))
+        except Exception as error:
+            _send(out, ("error", f"{type(error).__name__}: {error}"))
+            return
 
 
 class RGBDCamera:
@@ -60,12 +196,6 @@ class RGBDCamera:
 
         self.model = model
         self.camera_name = camera_name
-        self.joint_qpos_index = []
-        for joint_name in HEAD_CAMERA_JOINTS:
-            joint_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, joint_name)
-            if joint_id < 0:
-                raise ValueError(f"MuJoCo joint {joint_name!r} was not found in the model")
-            self.joint_qpos_index.append(int(model.jnt_qposadr[joint_id]))
         self.camera_id = camera_id
         self.width = width
         self.height = height
@@ -75,19 +205,13 @@ class RGBDCamera:
 
         self._condition = threading.Condition()
         self._pending_state = None
+        self._pending_stamp_ns = 0
         self._stop_requested = False
         self._thread: Optional[threading.Thread] = None
         self._worker_error: Optional[Exception] = None
 
-        # Right-hand gripper: only when the model has it (other robot models keep a camera-only RGBDCamera).
-        self.gripper: Optional[HandController] = None
-        if mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, "right_jaw_a_joint") >= 0:
-            self.gripper = HandController(model)
-
     def start(self) -> None:
-        """Start the rendering worker (and the gripper's ROS worker)."""
-        if self.gripper is not None:
-            self.gripper.start()
+        """Start the rendering worker."""
         if self._thread is not None:
             return
 
@@ -105,8 +229,6 @@ class RGBDCamera:
         lock. It performs no OpenGL operations and never waits for rendering.
         The return value indicates whether a state was submitted.
         """
-        if self.gripper is not None:
-            self.gripper.step(data)        # every iteration, also when the camera itself has failed
         if self._thread is None:
             raise RuntimeError("RGB-D worker has not been started")
         if self._worker_error is not None:
@@ -141,6 +263,10 @@ class RGBDCamera:
         with self._condition:
             # Replace an unrendered state: only the newest frame matters.
             self._pending_state = state
+            # Capture time (wall clock = ROS system time): the images are stamped with it, like a real camera's
+            # exposure time, not with the later publish time after rendering. Consumers pair the images with the
+            # robot's measured joint states by this stamp.
+            self._pending_stamp_ns = time.time_ns()
             self._condition.notify()
 
         self.last_submitted_time = simulation_time
@@ -172,18 +298,9 @@ class RGBDCamera:
                 "/gr3/camera/depth/image_raw",
                 image_qos,
             )
-            joint_publisher = ros_node.create_publisher(
-                JointState, 
-                "/gr3/camera/joint_states", 
-                image_qos
-            )
 
             render_data = mujoco.MjData(self.model)
-            renderer = mujoco.Renderer(
-                self.model,
-                height=self.height,
-                width=self.width,
-            )
+            renderer = self._make_renderer()
 
             while True:
                 with self._condition:
@@ -197,36 +314,25 @@ class RGBDCamera:
                         break
 
                     state = self._pending_state
+                    stamp_ns = self._pending_stamp_ns
                     self._pending_state = None
 
-                (
-                    simulation_time,
-                    qpos,
-                    qvel,
-                    act,
-                    mocap_pos,
-                    mocap_quat,
-                    userdata,
-                ) = state
-
-                render_data.time = simulation_time
-                render_data.qpos[:] = qpos
-                render_data.qvel[:] = qvel
-                render_data.act[:] = act
-                render_data.mocap_pos[:] = mocap_pos
-                render_data.mocap_quat[:] = mocap_quat
-                render_data.userdata[:] = userdata
-                mujoco.mj_forward(self.model, render_data)
-
-                rgb, depth = self._capture(renderer, render_data)
+                if isinstance(renderer, _OSMesaRenderer):
+                    rgb, depth = renderer.render(state)
+                else:
+                    _apply_state(self.model, render_data, state)
+                    rgb, depth = _render_rgbd(renderer, render_data, self.camera_name)
+                if rgb.shape != (self.height, self.width, 3):
+                    raise RuntimeError(f"Unexpected RGB shape: {rgb.shape}")
+                if depth.shape != (self.height, self.width):
+                    raise RuntimeError(f"Unexpected depth shape: {depth.shape}")
                 self._publish_pair(
                     ros_node,
                     rgb_publisher,
                     depth_publisher,
                     rgb,
                     depth,
-                    joint_publisher,
-                    qpos
+                    stamp_ns,
                 )
         except Exception as error:  # Keep the main simulation alive.
             self._worker_error = error
@@ -244,28 +350,17 @@ class RGBDCamera:
             if ros_context is not None and ros_context.ok():
                 rclpy.shutdown(context=ros_context)
 
-    def _capture(
-        self,
-        renderer: mujoco.Renderer,
-        data: mujoco.MjData,
-    ) -> Tuple[np.ndarray, np.ndarray]:
-        """Render one synchronized RGB/depth pair from private data."""
-        renderer.disable_depth_rendering()
-        renderer.update_scene(data, camera=self.camera_name)
-        self._disable_expensive_effects(renderer)
-        rgb = renderer.render().copy()
-
-        # Reuse the scene so RGB and depth correspond to exactly the same state.
-        renderer.enable_depth_rendering()
-        depth = renderer.render().copy()
-        renderer.disable_depth_rendering()
-
-        if rgb.shape != (self.height, self.width, 3):
-            raise RuntimeError(f"Unexpected RGB shape: {rgb.shape}")
-        if depth.shape != (self.height, self.width):
-            raise RuntimeError(f"Unexpected depth shape: {depth.shape}")
-
-        return rgb, depth
+    def _make_renderer(self):
+        """OSMesa child process (default) or an in-process renderer (GR3_CAMERA_GL=gpu / fallback)."""
+        if CAMERA_GL == "osmesa":
+            try:
+                renderer = _OSMesaRenderer(self.model, self.camera_name, self.width, self.height)
+                print("RGB-D camera: rendering with OSMesa in a separate process", flush=True)
+                return renderer
+            except Exception as error:
+                print(f"RGB-D camera: OSMesa unavailable ({type(error).__name__}: {error}); "
+                      "rendering on the GPU instead (inside VMware this stalls the whole desktop)", flush=True)
+        return mujoco.Renderer(self.model, height=self.height, width=self.width)
 
     def _publish_pair(
         self,
@@ -274,11 +369,10 @@ class RGBDCamera:
         depth_publisher,
         rgb: np.ndarray,
         depth: np.ndarray,
-        joint_publisher=None,
-        qpos: Optional[np.ndarray] = None
+        stamp_ns: int,
     ) -> None:
-        """Publish synchronized RGB and depth images with one ROS timestamp."""
-        timestamp = ros_node.get_clock().now().to_msg()
+        """Publish synchronized RGB and depth images with one timestamp (the capture time)."""
+        timestamp = Time(sec=stamp_ns // 1_000_000_000, nanosec=stamp_ns % 1_000_000_000)
 
         rgb = np.ascontiguousarray(rgb, dtype=np.uint8)
         rgb_message = Image()
@@ -304,24 +398,9 @@ class RGBDCamera:
 
         rgb_publisher.publish(rgb_message)
         depth_publisher.publish(depth_message)
-        if joint_publisher is not None and qpos is not None:
-            joint_message = JointState()
-            joint_message.header.stamp = timestamp
-            joint_message.header.frame_id = "base_link"
-            joint_message.name = list(HEAD_CAMERA_JOINTS)
-            joint_message.position = [float(qpos[i]) for i in self.joint_qpos_index]
-            joint_publisher.publish(joint_message)
-
-    @staticmethod
-    def _disable_expensive_effects(renderer: mujoco.Renderer) -> None:
-        """Disable effects that are costly inside VMware."""
-        renderer.scene.flags[mujoco.mjtRndFlag.mjRND_SHADOW] = 0
-        renderer.scene.flags[mujoco.mjtRndFlag.mjRND_REFLECTION] = 0
 
     def close(self) -> None:
         """Stop the worker and release its renderer in the worker thread."""
-        if self.gripper is not None:
-            self.gripper.close()
         thread = self._thread
         if thread is None:
             return
@@ -333,3 +412,7 @@ class RGBDCamera:
 
         thread.join()
         self._thread = None
+
+
+if __name__ == "__main__" and len(sys.argv) == 8 and sys.argv[1] == "--osmesa-worker":
+    _osmesa_worker(sys.argv[2], sys.argv[3], int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6]), int(sys.argv[7]))
