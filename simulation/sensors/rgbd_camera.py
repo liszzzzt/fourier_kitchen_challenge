@@ -17,6 +17,7 @@ Rendering backend (GR3_CAMERA_GL environment variable):
 
 import os
 import pickle
+import random
 import struct
 import subprocess
 import sys
@@ -178,11 +179,17 @@ class RGBDCamera:
         width: int = 320,
         height: int = 240,
         frequency_hz: float = 5.0,
+        # 0.08 seconds
+        latency_mean_s: float = 0.0,
+        # 0.02 seconds
+        latency_jitter_s: float = 0.0,
     ):
         if width <= 0 or height <= 0:
             raise ValueError("RGB-D image dimensions must be positive")
         if frequency_hz <= 0:
             raise ValueError("RGB-D frequency must be positive")
+        if latency_mean_s < 0 or latency_jitter_s < 0:
+            raise ValueError("RGB-D latency values must be non-negative")
 
         camera_id = mujoco.mj_name2id(
             model,
@@ -201,12 +208,16 @@ class RGBDCamera:
         self.height = height
         self.capture_period = 1.0 / frequency_hz
 
+        self.latency_mean_s = latency_mean_s
+        self.latency_jitter_s = latency_jitter_s
+
         self.last_submitted_time: Optional[float] = None
 
         self._condition = threading.Condition()
         self._pending_state = None
         self._pending_stamp_ns = 0
         self._stop_requested = False
+        self._stop_event = threading.Event()
         self._thread: Optional[threading.Thread] = None
         self._worker_error: Optional[Exception] = None
 
@@ -326,6 +337,8 @@ class RGBDCamera:
                     raise RuntimeError(f"Unexpected RGB shape: {rgb.shape}")
                 if depth.shape != (self.height, self.width):
                     raise RuntimeError(f"Unexpected depth shape: {depth.shape}")
+                if self._stop_event.wait(self._sample_latency()):
+                    break
                 self._publish_pair(
                     ros_node,
                     rgb_publisher,
@@ -377,7 +390,7 @@ class RGBDCamera:
         rgb = np.ascontiguousarray(rgb, dtype=np.uint8)
         rgb_message = Image()
         rgb_message.header.stamp = timestamp
-        rgb_message.header.frame_id = self.camera_name
+        rgb_message.header.frame_id = "camera_link"
         rgb_message.height = self.height
         rgb_message.width = self.width
         rgb_message.encoding = "rgb8"
@@ -388,7 +401,7 @@ class RGBDCamera:
         depth = np.ascontiguousarray(depth, dtype=np.float32)
         depth_message = Image()
         depth_message.header.stamp = timestamp
-        depth_message.header.frame_id = self.camera_name
+        depth_message.header.frame_id = "camera_link"
         depth_message.height = self.height
         depth_message.width = self.width
         depth_message.encoding = "32FC1"
@@ -398,6 +411,15 @@ class RGBDCamera:
 
         rgb_publisher.publish(rgb_message)
         depth_publisher.publish(depth_message)
+
+    def _sample_latency(self) -> float:
+        """Sample one non-negative publication delay for an RGB-D pair."""
+        if self.latency_mean_s == 0.0 and self.latency_jitter_s == 0.0:
+            return 0.0
+        return max(
+            0.0,
+            random.gauss(self.latency_mean_s, self.latency_jitter_s),
+        )
 
     def close(self) -> None:
         """Stop the worker and release its renderer in the worker thread."""
@@ -409,6 +431,7 @@ class RGBDCamera:
             self._stop_requested = True
             self._pending_state = None
             self._condition.notify_all()
+        self._stop_event.set()
 
         thread.join()
         self._thread = None

@@ -33,6 +33,7 @@ import numpy as np
 import xml.etree.ElementTree as ET
 
 from rgbd_camera import RGBDCamera
+from lidar_2d import Lidar2D
 
 if not glfw._glfw:  # pylint: disable=protected-access
   raise RuntimeError('GLFW dynamic library handle is not available')
@@ -207,6 +208,7 @@ def _physics_loop(simulate: _Simulate, loader: Optional[_InternalLoaderType]):
   d: mujoco.MjData = None
   ctrl_noise = np.array([])
   rgbd_camera = None
+  lidar_2d = None
   reload = True
 
   # CPU-sim synchronization point.
@@ -232,15 +234,26 @@ def _physics_loop(simulate: _Simulate, loader: Optional[_InternalLoaderType]):
 
         if rgbd_camera is not None:
           rgbd_camera.close()
+        if lidar_2d is not None:
+          lidar_2d.close()
 
-        rgbd_camera = RGBDCamera(
-            model=m,
-            camera_name="gr3_head_rgbd",
-            width=320,
-            height=240,
-            frequency_hz=5.0,
-        )
-        rgbd_camera.start()
+        try:
+          rgbd_camera = RGBDCamera(
+              model=m,
+          )
+          rgbd_camera.start()
+        except ValueError as error:
+          rgbd_camera = None
+          print(f"RGB-D disabled: {error}", flush=True)
+
+        try:
+          lidar_2d = Lidar2D(
+              model=m,
+          )
+          lidar_2d.start()
+        except ValueError as error:
+          lidar_2d = None
+          print(f"LiDAR disabled: {error}", flush=True)
 
     reload = False
 
@@ -330,9 +343,13 @@ def _physics_loop(simulate: _Simulate, loader: Optional[_InternalLoaderType]):
 
         if rgbd_camera is not None:
           rgbd_camera.submit_state_if_due(d)
+        if lidar_2d is not None:
+          lidar_2d.submit_state_if_due(d)
 
   if rgbd_camera is not None:
     rgbd_camera.close()
+  if lidar_2d is not None:
+    lidar_2d.close()
 
 
 def _launch_internal(

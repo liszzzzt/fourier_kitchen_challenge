@@ -1,9 +1,12 @@
 import json
 import rclpy
 from rclpy.node import Node
+from rclpy.executors import MultiThreadedExecutor
 from std_msgs.msg import String
 
 from gr3_robot_side.robot.gr3 import FourierGR3
+from gr3_robot_side.robot.lidar_publisher import GR3LidarPublisher
+from gr3_robot_side.robot.state_publisher import GR3StatePublisher
 
 
 class GR3RobotSide(Node):
@@ -74,17 +77,26 @@ class GR3RobotSide(Node):
 def main():
     rclpy.init()
 
-    # gr3
     gr3 = FourierGR3()
     gr3.launch()
 
-    # ros2
-    gr3_node = GR3RobotSide(gr3)
+    command_node = GR3RobotSide(gr3)
+    state_node = GR3StatePublisher(gr3)
+    lidar_node = GR3LidarPublisher()
+
+    executor = MultiThreadedExecutor(num_threads=2)
+    executor.add_node(command_node)
+    executor.add_node(state_node)
+    executor.add_node(lidar_node)
+
     try:
-        rclpy.spin(gr3_node)
+        executor.spin()
     finally:
+        executor.shutdown()
+        command_node.destroy_node()
+        state_node.destroy_node()
+        lidar_node.destroy_node()
         gr3.shutdown()
-        gr3_node.destroy_node()
         rclpy.shutdown()
 
 if __name__ == "__main__":

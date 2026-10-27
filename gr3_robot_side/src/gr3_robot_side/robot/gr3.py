@@ -17,11 +17,13 @@ class FourierGR3:
         self.locomotion_c = LocomotionController(self.client, self.move_command_manager, 1)
         self.manipulation_c = ManipulationController(self.client, self.move_command_manager, 0.5)
 
+    def test(self):
+        pass
+
     def launch(self):
         if self.fsm_state == 0:
             self.stand()
-        self.start_position = self.client.get_base_data("pos_W")
-        print(18, "start_position", self.start_position)
+        self.test()
 
     def stand(self):
         self.fsm_state = 2
@@ -35,6 +37,12 @@ class FourierGR3:
     def manipulation(self, msg):
         result = self.manipulation_c.execute(msg)
         return result
+
+    def get_group_state(self, group_name, key):
+        return self.client.get_group_state(group_name, key)
+
+    def get_base_data(self, key):
+        return self.client.get_base_data(key)
 
     def shutdown(self):
         self.fsm_state = 0
