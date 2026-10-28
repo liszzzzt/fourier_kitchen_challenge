@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mujoco>
+  <default>
+    <default class="rh_2f85_mechanism">
+      <joint damping="0.05" frictionloss="0" armature="0.0001" limited="true" solreflimit="0.005 1" />
+    </default>
+  </default>
+  <asset>
+    <mesh name="rh_2f85_base" file="robotiq_2f85/assets/base.stl" />
+    <mesh name="rh_2f85_inner_finger" file="robotiq_2f85/assets/inner_finger.stl" />
+    <mesh name="rh_2f85_inner_finger_visual" file="robotiq_2f85/assets/inner_finger_visual.stl" />
+    <mesh name="rh_2f85_inner_knuckle" file="robotiq_2f85/assets/inner_knuckle.stl" />
+    <mesh name="rh_2f85_inner_knuckle_visual" file="robotiq_2f85/assets/inner_knuckle_visual.stl" />
+    <mesh name="rh_2f85_outer_finger" file="robotiq_2f85/assets/outer_finger.stl" />
+    <mesh name="rh_2f85_outer_finger_visual" file="robotiq_2f85/assets/outer_finger_visual.stl" />
+    <mesh name="rh_2f85_outer_knuckle" file="robotiq_2f85/assets/outer_knuckle.stl" />
+    <mesh name="rh_2f85_outer_knuckle_visual" file="robotiq_2f85/assets/outer_knuckle_visual.stl" />
+  </asset>
+  <equality>
+    <joint joint1="rh_2f85_left_inner_finger_joint" joint2="rh_2f85_finger_joint" polycoef="0 -1 0 0 0" solref="0.005 1" />
+    <joint joint1="rh_2f85_left_inner_knuckle_joint" joint2="rh_2f85_finger_joint" polycoef="0 1 0 0 0" solref="0.005 1" />
+    <joint joint1="rh_2f85_right_outer_knuckle_joint" joint2="rh_2f85_finger_joint" polycoef="0 1 0 0 0" solref="0.005 1" />
+    <joint joint1="rh_2f85_right_inner_finger_joint" joint2="rh_2f85_finger_joint" polycoef="0 -1 0 0 0" solref="0.005 1" />
+    <joint joint1="rh_2f85_right_inner_knuckle_joint" joint2="rh_2f85_finger_joint" polycoef="0 1 0 0 0" solref="0.005 1" />
+  </equality>
+  <contact>
+    <exclude body1="rh_2f85_base" body2="rh_2f85_left_outer_knuckle" />
+    <exclude body1="rh_2f85_base" body2="rh_2f85_left_inner_knuckle" />
+    <exclude body1="rh_2f85_left_outer_knuckle" body2="rh_2f85_left_inner_knuckle" />
+    <exclude body1="rh_2f85_left_outer_finger" body2="rh_2f85_left_inner_knuckle" />
+    <exclude body1="rh_2f85_left_inner_finger" body2="rh_2f85_left_inner_knuckle" />
+    <exclude body1="rh_2f85_base" body2="rh_2f85_right_outer_knuckle" />
+    <exclude body1="rh_2f85_base" body2="rh_2f85_right_inner_knuckle" />
+    <exclude body1="rh_2f85_right_outer_knuckle" body2="rh_2f85_right_inner_knuckle" />
+    <exclude body1="rh_2f85_right_outer_finger" body2="rh_2f85_right_inner_knuckle" />
+    <exclude body1="rh_2f85_right_inner_finger" body2="rh_2f85_right_inner_knuckle" />
+  </contact>
+  <actuator>
+    <position name="rh_2f85_actuator" joint="rh_2f85_finger_joint" kp="20" ctrllimited="true" ctrlrange="0 0.8" forcelimited="true" forcerange="-2 2" />
+  </actuator>
+</mujoco>

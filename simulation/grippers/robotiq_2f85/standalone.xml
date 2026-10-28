@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mujoco model="kinova_robotiq_2f85_standalone">
+  <compiler angle="radian" autolimits="true" meshdir=".." />
+  <option timestep="0.001" gravity="0 0 -9.81" />
+  <include file="definitions.xml" />
+  <worldbody>
+    <include file="body.xml" />
+  </worldbody>
+</mujoco>

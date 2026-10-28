@@ -34,6 +34,7 @@ import xml.etree.ElementTree as ET
 
 from rgbd_camera import RGBDCamera
 from lidar_2d import Lidar2D
+from hand_controller import with_hand_controller, body_motor_count
 
 if not glfw._glfw:  # pylint: disable=protected-access
   raise RuntimeError('GLFW dynamic library handle is not available')
@@ -202,7 +203,8 @@ def _reload(
     return m, d
 
 
-def _physics_loop(simulate: _Simulate, loader: Optional[_InternalLoaderType]):
+@with_hand_controller
+def _physics_loop(simulate: _Simulate, loader: Optional[_InternalLoaderType], *, hand):
   """Physics loop for the GUI, to be run in a separate thread."""
   m: mujoco.MjModel = None
   d: mujoco.MjData = None
@@ -230,6 +232,8 @@ def _physics_loop(simulate: _Simulate, loader: Optional[_InternalLoaderType]):
       result = _reload(simulate, loader)
       if result is not None:
         m, d = result
+        body_motor_count(m)
+        hand.bind(m, d)
         ctrl_noise = np.zeros((m.nu,))
 
         if rgbd_camera is not None:
@@ -293,6 +297,7 @@ def _physics_loop(simulate: _Simulate, loader: Optional[_InternalLoaderType]):
           simulator_state_pub(m, d)
           # apply control
           apply_control(m, d)
+          hand.update(running=True)
 
         #   motion_cap(m, d)
 
@@ -339,6 +344,7 @@ def _physics_loop(simulate: _Simulate, loader: Optional[_InternalLoaderType]):
         else:  # simulate.run is False: GUI is paused.
 
           # Run mj_forward, to update rendering and joint sliders.
+          hand.update(running=False)
           mujoco.mj_forward(m, d)
 
         if rgbd_camera is not None:
@@ -511,18 +517,19 @@ def motion_cap(model, data)-> None:
             np.savetxt(file, [out_data], delimiter=" ", fmt="%.6f")  # 以6位小数格式存储
   
 def simulator_state_pub(model, data)-> None:
+    body_count = body_motor_count(model)
     msg = simulator_pub_msg.simulator_pub_msg()
     msg.timestamp = int(time.time() * 1000.0)  # 当前时间戳，以毫秒为单位
-    msg.motorNum = model.nu
+    msg.motorNum = body_count
 
     sensor_id_jointpos = 0
-    sensor_id_jointvel = model.nu
+    sensor_id_jointvel = body_count
     sensor_id_accelerometer = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SENSOR, "baselink-baseAcc")
     sensor_id_gyro = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SENSOR, "baselink-gyro")
     sensor_id_framequat = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SENSOR, "baselink-quat")
 
-    msg.q = data.sensordata[sensor_id_jointpos:sensor_id_jointpos + model.nu]
-    msg.qDot = data.sensordata[sensor_id_jointvel:sensor_id_jointvel + model.nu]
+    msg.q = data.sensordata[sensor_id_jointpos:sensor_id_jointpos + body_count]
+    msg.qDot = data.sensordata[sensor_id_jointvel:sensor_id_jointvel + body_count]
     sensor_id = sensor_id_accelerometer
     msg.acc = data.sensordata[sensor_id:sensor_id + 3]
     sensor_id = sensor_id + 3
@@ -559,19 +566,20 @@ def lcm_message_handler(channel, data):
     lcm_sub_msg = lcm_sub_msg_decoder.decode(data)
 
 def apply_control(model, data) -> None:
+    body_count = body_motor_count(model)
 
     sensor_id_jointpos = 0
-    sensor_id_jointvel = model.nu
+    sensor_id_jointvel = body_count
     if lcm_sub_msg is None:
-        data.ctrl[:] = np.zeros(model.nu)
+        data.ctrl[:body_count] = np.zeros(body_count)
     else:
         if (lcm_sub_msg.started == 0):
-            data.ctrl[:] = np.zeros(model.nu)
+            data.ctrl[:body_count] = np.zeros(body_count)
         else:
             kp = lcm_sub_msg.q_kp
             kd = lcm_sub_msg.q_kd
-            data.ctrl[:] = kp * (lcm_sub_msg.qCmd - data.sensordata[sensor_id_jointpos:sensor_id_jointpos + model.nu])  \
-                         + kd * (lcm_sub_msg.qDotCmd - data.sensordata[sensor_id_jointvel:sensor_id_jointvel + model.nu]) \
+            data.ctrl[:body_count] = kp * (lcm_sub_msg.qCmd - data.sensordata[sensor_id_jointpos:sensor_id_jointpos + body_count])  \
+                         + kd * (lcm_sub_msg.qDotCmd - data.sensordata[sensor_id_jointvel:sensor_id_jointvel + body_count]) \
                          + lcm_sub_msg.torqCmd
 
 if __name__ == '__main__':
