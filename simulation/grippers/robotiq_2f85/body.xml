@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mujoco>
+  <body name="rh_2f85_mount" quat="0 1 0 0" childclass="rh_2f85_mechanism">
+    <body name="rh_2f85_base" quat="0.7073882692 0 0 0.7068251811">
+      <inertial pos="8.625E-08 -4.6583E-06 0.03145" mass="0.22652" fullinertia="0.00020005 0.00017832 0.00013478 -4.2442E-10 -2.9069E-10 -3.4402E-08" />
+      <geom name="rh_2f85_base_visual" type="mesh" mesh="rh_2f85_base" contype="0" conaffinity="0" group="2" mass="0" rgba="0.18 0.18 0.18 1" />
+      <geom name="rh_2f85_base_collision" type="mesh" mesh="rh_2f85_base" group="3" mass="0" contype="1" conaffinity="1" />
+      <body name="rh_2f85_left_outer_knuckle" pos="0 -0.0306011 0.054904" quat="0 0 0 1">
+        <inertial pos="-0.000200000000003065 0.0199435877845359 0.0292245259211331" mass="0.00853198276973456" fullinertia="2.89328108496468E-06 1.86719750325683E-06 1.21905238907251E-06 -1.57935047237397E-19 -1.93980378593255E-19 -1.21858577871576E-06" />
+        <joint name="rh_2f85_finger_joint" axis="1 0 0" range="0 0.8" />
+        <geom name="rh_2f85_left_outer_knuckle_visual" type="mesh" mesh="rh_2f85_outer_knuckle_visual" contype="0" conaffinity="0" group="2" mass="0" rgba="0.18 0.18 0.18 1" />
+        <geom name="rh_2f85_left_outer_knuckle_collision" type="mesh" mesh="rh_2f85_outer_knuckle" group="3" mass="0" contype="1" conaffinity="1" />
+        <body name="rh_2f85_left_outer_finger" pos="0 0.0315 -0.0041">
+          <inertial pos="0.00030115855001899 0.0373907951953854 -0.0208027427000385" mass="0.022614240507152" fullinertia="1.52518312458174E-05 6.17694243867776E-06 1.16494917907219E-05 9.76583423954399E-10 -5.43838577022588E-10 6.78636130740228E-06" />
+          <geom name="rh_2f85_left_outer_finger_visual" type="mesh" mesh="rh_2f85_outer_finger_visual" contype="0" conaffinity="0" group="2" mass="0" rgba="0.18 0.18 0.18 1" />
+          <geom name="rh_2f85_left_outer_finger_collision" type="mesh" mesh="rh_2f85_outer_finger" group="3" mass="0" contype="1" conaffinity="1" />
+          <body name="rh_2f85_left_inner_finger" pos="0 0.0061 0.0471">
+            <inertial pos="0.000299999999999317 0.0160078233491243 -0.0136945669206257" mass="0.0104003125914103" fullinertia="2.71909453810972E-06 7.69100314106116E-07 2.30315190420171E-06 1.35402465472579E-21 -7.1817349065269E-22 6.74715432769696E-07" />
+            <joint name="rh_2f85_left_inner_finger_joint" axis="1 0 0" range="-0.8757 0.8757" />
+            <geom name="rh_2f85_left_inner_finger_visual" type="mesh" mesh="rh_2f85_inner_finger_visual" contype="0" conaffinity="0" group="2" mass="0" rgba="0.18 0.18 0.18 1" />
+            <geom name="rh_2f85_left_inner_finger_collision" type="mesh" mesh="rh_2f85_inner_finger" group="3" mass="0" contype="1" conaffinity="1" />
+            <body name="rh_2f85_left_pad" pos="0 -0.0220203446692936 0.03242">
+              <geom name="rh_2f85_left_pad_contact" type="box" size="0.011 0.003175 0.01875" mass="0" contype="1" conaffinity="1" rgba="0.65 0.65 0.65 1" friction="0.7 0.005 0.0001" />
+              <site name="rh_2f85_left_pad_center" size="0.001" rgba="0 0 0 0" />
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="rh_2f85_left_inner_knuckle" pos="0 -0.0127 0.06142" quat="0 0 0 1">
+        <inertial pos="0.000123011831763771 0.0507850843201817 0.00103968640075166" mass="0.0271177346495152" fullinertia="2.61910379223783E-05 2.8270243746167E-06 2.83695868220296E-05 -2.43616858946494E-07 -6.37789906117123E-09 -5.37200748039765E-07" />
+        <geom name="rh_2f85_left_inner_knuckle_visual" type="mesh" mesh="rh_2f85_inner_knuckle_visual" contype="0" conaffinity="0" group="2" mass="0" rgba="0.18 0.18 0.18 1" />
+        <geom name="rh_2f85_left_inner_knuckle_collision" type="mesh" mesh="rh_2f85_inner_knuckle" group="3" mass="0" contype="1" conaffinity="1" />
+        <joint name="rh_2f85_left_inner_knuckle_joint" axis="1 0 0" range="0 0.8757" />
+      </body>
+      <body name="rh_2f85_right_outer_knuckle" pos="0 0.0306011 0.054904" quat="1 0 0 0">
+        <inertial pos="-0.000200000000003065 0.0199435877845359 0.0292245259211331" mass="0.00853198276973456" fullinertia="2.89328108496468E-06 1.86719750325683E-06 1.21905238907251E-06 -1.57935047237397E-19 -1.93980378593255E-19 -1.21858577871576E-06" />
+        <joint name="rh_2f85_right_outer_knuckle_joint" axis="1 0 0" range="0 0.81" />
+        <geom name="rh_2f85_right_outer_knuckle_visual" type="mesh" mesh="rh_2f85_outer_knuckle_visual" contype="0" conaffinity="0" group="2" mass="0" rgba="0.18 0.18 0.18 1" />
+        <geom name="rh_2f85_right_outer_knuckle_collision" type="mesh" mesh="rh_2f85_outer_knuckle" group="3" mass="0" contype="1" conaffinity="1" />
+        <body name="rh_2f85_right_outer_finger" pos="0 0.0315 -0.0041">
+          <inertial pos="0.00030115855001899 0.0373907951953854 -0.0208027427000385" mass="0.022614240507152" fullinertia="1.52518312458174E-05 6.17694243867776E-06 1.16494917907219E-05 9.76583423954399E-10 -5.43838577022588E-10 6.78636130740228E-06" />
+          <geom name="rh_2f85_right_outer_finger_visual" type="mesh" mesh="rh_2f85_outer_finger_visual" contype="0" conaffinity="0" group="2" mass="0" rgba="0.18 0.18 0.18 1" />
+          <geom name="rh_2f85_right_outer_finger_collision" type="mesh" mesh="rh_2f85_outer_finger" group="3" mass="0" contype="1" conaffinity="1" />
+          <body name="rh_2f85_right_inner_finger" pos="0 0.0061 0.0471">
+            <inertial pos="0.000299999999999317 0.0160078233491243 -0.0136945669206257" mass="0.0104003125914103" fullinertia="2.71909453810972E-06 7.69100314106116E-07 2.30315190420171E-06 1.35402465472579E-21 -7.1817349065269E-22 6.74715432769696E-07" />
+            <joint name="rh_2f85_right_inner_finger_joint" axis="1 0 0" range="-0.8757 0.8757" />
+            <geom name="rh_2f85_right_inner_finger_visual" type="mesh" mesh="rh_2f85_inner_finger_visual" contype="0" conaffinity="0" group="2" mass="0" rgba="0.18 0.18 0.18 1" />
+            <geom name="rh_2f85_right_inner_finger_collision" type="mesh" mesh="rh_2f85_inner_finger" group="3" mass="0" contype="1" conaffinity="1" />
+            <body name="rh_2f85_right_pad" pos="0 -0.0220203446692936 0.03242">
+              <geom name="rh_2f85_right_pad_contact" type="box" size="0.011 0.003175 0.01875" mass="0" contype="1" conaffinity="1" rgba="0.65 0.65 0.65 1" friction="0.7 0.005 0.0001" />
+              <site name="rh_2f85_right_pad_center" size="0.001" rgba="0 0 0 0" />
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="rh_2f85_right_inner_knuckle" pos="0 0.0127 0.06142" quat="1 0 0 0">
+        <inertial pos="0.000123011831763771 0.0507850843201817 0.00103968640075166" mass="0.0271177346495152" fullinertia="2.61910379223783E-05 2.8270243746167E-06 2.83695868220296E-05 -2.43616858946494E-07 -6.37789906117123E-09 -5.37200748039765E-07" />
+        <geom name="rh_2f85_right_inner_knuckle_visual" type="mesh" mesh="rh_2f85_inner_knuckle_visual" contype="0" conaffinity="0" group="2" mass="0" rgba="0.18 0.18 0.18 1" />
+        <geom name="rh_2f85_right_inner_knuckle_collision" type="mesh" mesh="rh_2f85_inner_knuckle" group="3" mass="0" contype="1" conaffinity="1" />
+        <joint name="rh_2f85_right_inner_knuckle_joint" axis="1 0 0" range="0 0.8757" />
+      </body>
+    </body>
+  </body>
+</mujoco>
