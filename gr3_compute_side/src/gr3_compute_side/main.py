@@ -39,6 +39,8 @@ def main():
             remote_control.launch()
         elif control_key == "2":
             center_control.execute_schedule()
+            print("Schedule finished. Remote control enabled.")
+            remote_control.launch()
     finally:
         if rgbd_viewer is not None:
             rgbd_viewer.close()

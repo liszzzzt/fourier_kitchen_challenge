@@ -63,12 +63,23 @@ class RemoteControl:
                 "frame_id": "map",
                 "coordinate": [],
                 "type": "remote",
-                "key": key
+                "key": key,
+                "action": "",
+                "level": "",
             }
             if key in LOCOMOTION_KEYS:
                 self.compute_node.send_locomotion_command(msg)
             elif key in MANIPULATION_KEYS:
                 self.compute_node.send_manipulation_command(msg)
+            elif key == 'p':
+                # test
+                msg = {
+                    "id": command_id,
+                    "level": 1,
+                    "type": "posture",
+                    "action": "crouch",
+                }
+                self.compute_node.send_locomotion_command(msg)
             else:
                 print(f"Unknown key: {key}")
                 continue

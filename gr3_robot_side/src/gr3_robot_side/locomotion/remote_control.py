@@ -40,17 +40,17 @@ class LocomotionRemoteControl():
             self.client.set_fsm_state(2)
             time.sleep(self.sleep_interval)
             if key == "z":
-                p[0] = p[0] + 0.04
+                p[0] = p[0] + 0.06
             elif key == "x":
-                p[0] = p[0] - 0.04
+                p[0] = p[0] - 0.06
             elif key == "c":
-                p[1] = p[1] + 0.05
+                p[1] = p[1] + 0.07
             elif key == "v":
-                p[1] = p[1] - 0.05
+                p[1] = p[1] - 0.07
             elif key == "b":
-                p[2] = p[2] + 0.08
+                p[2] = p[2] + 0.09
             elif key == "n":
-                p[2] = p[2] - 0.08
+                p[2] = p[2] - 0.09
             # p[0] = max(-0.10, min(0.10, p[0]))
             # p[1] = max(-0.10, min(0.10, p[1]))
             # p[2] = max(-0.10, min(0.10, p[2]))
